@@ -13,6 +13,20 @@ export interface Product {
   rating: number;
   reviewCount: number;
   inStock: boolean;
+  /**
+   * Store fulfillment metadata is required by cart/checkout flows (e.g. showing the pickup/delivery store).
+   * Keep this non-optional so we catch missing data at compile-time rather than crashing at runtime.
+   */
+  fulfillment: Fulfillment;
+}
+
+export interface Store {
+  id: string;
+  name: string;
+}
+
+export interface Fulfillment {
+  store: Store;
 }
 
 export interface Category {
