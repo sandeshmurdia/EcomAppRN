@@ -1,0 +1,22 @@
+{
+  "_comment": "To change sourcemap or bundle paths: edit sourcemaps.android.release, sourcemaps.android.debug, and bundle.android.release (paths are relative to project root).",
+  "projectRoot": "/Users/sandesh/reactnativelatest/ReactNativeLatest",
+  "framework": "react-native",
+  "uploadBaseUrl": "https://servicesqa.zipy.ai/",
+  "apiKey": "5a83c383",
+  "customerId": "105",
+  "authKey": "105n0vcbe2mprctfrngv2k8sv0a8sa3d",
+  "sourcemaps": {
+    "android": {
+      "release": "android/app/build/generated/sourcemaps/react/release/index.android.bundle.map",
+      "debug": "android/app/build/generated/sourcemaps/react/debug/index.android.bundle.map"
+    }
+  },
+  "bundle": {
+    "android": {
+      "release": "android/app/build/generated/assets/react/release/index.android.bundle"
+    }
+  }
+}
+
+
