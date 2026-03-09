@@ -26,18 +26,10 @@ export function CartScreen({ navigation }: Props) {
   const total = subtotal + tax;
 
   const handleProceedToCheckout = () => {
-      const storeName = (
-        cart[0].product as {
-          fulfillment?: {
-            store?: {
-              name: string;
-            };
-          };
-        }
-      ).fulfillment!.store!.name;
-
-      console.log('Preparing checkout for store', storeName);
-      navigation.navigate('Checkout');
+    setErrorMessage('');
+    const storeName = cart[0].product.fulfillment.store.name;
+    console.log('Preparing checkout for store', storeName);
+    navigation.navigate('Checkout');
   };
 
   if (cart.length === 0) {
