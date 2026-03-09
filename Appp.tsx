@@ -5,6 +5,7 @@
  * @format
  */
 
+import { useEffect } from 'react';
 import { NewAppScreen } from '@react-native/new-app-screen';
 import { Button, StatusBar, StyleSheet, TextInput, useColorScheme, View } from 'react-native';
 import {
@@ -16,11 +17,13 @@ import {
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
+  // One-time breadcrumb to confirm app execution path in production logs.
+  useEffect(() => {
+    console.info('[App] mounted');
+  }, []);
 
-  setTimeout(() => {
-    const q = 10;
-    const a = q/b;
-  }, 5000);
+  // Removed an intentional crash (`b` was undefined) that triggered
+  // `ReferenceError: Property 'b' doesn't exist` at runtime.
   return (
     <View style={styles.container}>
        
