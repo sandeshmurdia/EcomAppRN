@@ -11,7 +11,7 @@ type Props = {
   navigation: NativeStackNavigationProp<ProfileStackParamList, 'Profile'>;
 };
 
-export function ProfileScreen({ navigation }: Props) {
+export function ProfileScreen({ navigation: _navigation }: Props) {
   const { user, signOut } = useApp();
 
   const handleSignOut = () => {
