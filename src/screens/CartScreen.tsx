@@ -28,26 +28,35 @@ export function CartScreen({ navigation }: Props) {
   const total = subtotal + tax;
 
   const handleProceedToCheckout = () => {
-    try {
-      const storeName = (
-        cart[0].product as {
-          fulfillment?: {
-            store?: {
-              name: string;
-            };
-          };
-        }
-      ).fulfillment!.store!.name;
+    const firstItem = cart[0];
+    const storeName = firstItem?.product.fulfillment?.store?.name;
+    const validationMessage = 'Checkout validation failed. Please try again.';
 
+    // Guard against incomplete product payloads (e.g., missing `fulfillment.store`) to prevent
+    // runtime crashes like "Cannot read property 'store' of undefined" and to surface a
+    // consistent user-facing message.
+    if (!storeName) {
+      console.warn('Checkout validation failed: missing fulfillment.store.name', {
+        productId: firstItem?.product?.id,
+      });
+      setErrorMessage(validationMessage);
+      if (Platform.OS === 'android') {
+        ToastAndroid.show(validationMessage, ToastAndroid.SHORT);
+      }
+      return;
+    }
+
+    try {
       console.log('Preparing checkout for store', storeName);
+      setErrorMessage('');
       navigation.navigate('Checkout');
     } catch (error) {
       // Surface the handled checkout exception to the user as a toast on Android,
       // while still keeping the console error for debugging/monitoring tools.
       console.error(error);
-      setErrorMessage('Checkout validation failed. Please try again.');
+      setErrorMessage(validationMessage);
       if (Platform.OS === 'android') {
-        ToastAndroid.show('Checkout validation failed. Please try again.', ToastAndroid.SHORT);
+        ToastAndroid.show(validationMessage, ToastAndroid.SHORT);
       }
     }
 
