@@ -28,33 +28,40 @@ export function CartScreen({ navigation }: Props) {
   const total = subtotal + tax;
 
   const handleProceedToCheckout = () => {
+    setErrorMessage('');
     try {
-      const storeName = (
-        cart[0].product as {
-          fulfillment?: {
-            store?: {
-              name: string;
-            };
-          };
+      // Guarded access: `Product` does not guarantee `fulfillment.store.name` exists.
+      // In production data this can be missing, and non-null assertions here crash the app.
+      if (cart.length === 0) {
+        setErrorMessage('Your cart is empty.');
+        if (Platform.OS === 'android') {
+          ToastAndroid.show('Your cart is empty.', ToastAndroid.SHORT);
         }
-      ).fulfillment!.store!.name;
+        return;
+      }
 
-      console.log('Preparing checkout for store', storeName);
+      const firstProduct = cart[0]?.product as unknown as {
+        id?: string;
+        fulfillment?: { store?: { name?: string } };
+      };
+      const storeName = firstProduct?.fulfillment?.store?.name;
+      if (!storeName) {
+        console.warn('ProceedToCheckout: missing store name', {
+          productId: firstProduct?.id,
+          cartSize: cart.length,
+        });
+      } else {
+        console.log('Preparing checkout for store', storeName);
+      }
       navigation.navigate('Checkout');
-    } catch (error : any) {
-      // Surface the handled checkout exception to the user as a toast on Android,
-      // while still keeping the console error for debugging/monitoring tools.
-      console.error(error);
-      console.error("Got error here", error);
-      console.error("got here", error.stack);
-      console.error("got here 2", error.message);
+    } catch (error: unknown) {
+      // Keep a single error log so crash reporting tools can capture it cleanly.
+      console.error('ProceedToCheckout: unexpected error', error);
       setErrorMessage('Checkout validation failed. Please try again.');
       if (Platform.OS === 'android') {
         ToastAndroid.show('Checkout validation failed. Please try again.', ToastAndroid.SHORT);
       }
     }
-
-
   };
 
   if (cart.length === 0) {
