@@ -113,7 +113,6 @@
 				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
 				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
 				B1CCF5D629E807AAB8ED541D /* ZipySourcemapsUpload */,
-
 			);
 			buildRules = (
 			);
@@ -183,7 +182,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export ZIPY_IOS_SOURCEMAP_PHASE=1\nexport ZIPY_IOS_OUTPUT_DIR=\"${PROJECT_DIR}/build/zipy/Sourcemaps\"\nmkdir -p \"$ZIPY_IOS_OUTPUT_DIR\"\nexport ZIPY_IOS_SENTINEL_FILE=\"$ZIPY_IOS_OUTPUT_DIR/zipy-debug-id.txt\"\nexport ZIPY_DEBUG_ID=\"$(node -e \"console.log(require('crypto').randomUUID())\")\"\nprintf %s \"$ZIPY_DEBUG_ID\" > \"$ZIPY_IOS_SENTINEL_FILE\"\nnode <<'ZIPYEOF'\nconst fs = require('fs');\nconst path = require('path');\nconst projectDir = process.env.PROJECT_DIR || '';\nconst bundleId = process.env.ZIPY_DEBUG_ID || '';\nconst nodeModulesRoot = path.resolve(projectDir, '..');\nconst debugIdFiles = [\n  path.join(nodeModulesRoot, 'node_modules/zipy-react-native/lib/commonjs/utils/debugid.cjs'),\n  path.join(nodeModulesRoot, 'node_modules/zipyai-react-native/lib/commonjs/utils/debugid.cjs'),\n];\nconst content = \"\\\"use strict\\\";Object.defineProperty(exports,\\\"__esModule\\\",{value:!0}),exports.BUNDLE_ID=void 0;const BUNDLE_ID=exports.BUNDLE_ID=\\\"\" + bundleId + "\\\";\";\nfor (const filePath of debugIdFiles) {\n  if (!fs.existsSync(filePath)) continue;\n  fs.writeFileSync(filePath, content, 'utf8');\n}\nZIPYEOF\nexport BUNDLE_FILE=\"$ZIPY_IOS_OUTPUT_DIR/main.jsbundle\"\nexport SOURCEMAP_FILE=\"$ZIPY_IOS_OUTPUT_DIR/main.jsbundle.map\"\nmkdir -p \"$(dirname \"$BUNDLE_FILE\")\"\nset -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"\\\"$WITH_ENVIRONMENT\\\" \\\"$REACT_NATIVE_XCODE\\\"\"\n";
+			shellScript = "export ZIPY_IOS_SOURCEMAP_PHASE=1\n# Stage the React Native bundle artifacts in a stable path so the later Zipy upload phase can locate them reliably during archives.\nexport BUNDLE_FILE=\"${PROJECT_DIR}/build/zipy/Sourcemaps/main.jsbundle\"\nexport SOURCEMAP_FILE=\"${PROJECT_DIR}/build/zipy/Sourcemaps/main.jsbundle.map\"\nmkdir -p \"$(dirname \"$BUNDLE_FILE\")\"\nset -e\n\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"\\\"$WITH_ENVIRONMENT\\\" \\\"$REACT_NATIVE_XCODE\\\"\"\n";
 		};
 		00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
