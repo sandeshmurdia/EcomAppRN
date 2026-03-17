@@ -13,6 +13,15 @@ export interface Product {
   rating: number;
   reviewCount: number;
   inStock: boolean;
+  /**
+   * Optional fulfillment metadata. Some product feeds (or mock data) may not provide it,
+   * so all properties are optional to avoid runtime crashes when validating checkout.
+   */
+  fulfillment?: {
+    store?: {
+      name?: string;
+    };
+  };
 }
 
 export interface Category {
