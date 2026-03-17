@@ -11,6 +11,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		B659F16415D9CB2BE311C2DB /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -104,7 +105,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "newrnapp" */;
 			buildPhases = (
-				B1CCF5D629E807AAB8ED541D /* ZipySourcemapsUpload */,
 				C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
@@ -112,6 +112,8 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
 				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
+				B1CCF5D629E807AAB8ED541D /* ZipySourcemapsUpload */,
+
 			);
 			buildRules = (
 			);
@@ -160,6 +162,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				B659F16415D9CB2BE311C2DB /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,7 +183,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"\\\"$WITH_ENVIRONMENT\\\" \\\"$REACT_NATIVE_XCODE\\\"\"\n";
+			shellScript = "export ZIPY_IOS_SOURCEMAP_PHASE=1\nexport ZIPY_IOS_OUTPUT_DIR=\"${PROJECT_DIR}/build/zipy/Sourcemaps\"\nmkdir -p \"$ZIPY_IOS_OUTPUT_DIR\"\nexport ZIPY_IOS_SENTINEL_FILE=\"$ZIPY_IOS_OUTPUT_DIR/zipy-debug-id.txt\"\nexport ZIPY_DEBUG_ID=\"$(node -e \"console.log(require('crypto').randomUUID())\")\"\nprintf %s \"$ZIPY_DEBUG_ID\" > \"$ZIPY_IOS_SENTINEL_FILE\"\nnode <<'ZIPYEOF'\nconst fs = require('fs');\nconst path = require('path');\nconst projectDir = process.env.PROJECT_DIR || '';\nconst bundleId = process.env.ZIPY_DEBUG_ID || '';\nconst nodeModulesRoot = path.resolve(projectDir, '..');\nconst debugIdFiles = [\n  path.join(nodeModulesRoot, 'node_modules/zipy-react-native/lib/commonjs/utils/debugid.cjs'),\n  path.join(nodeModulesRoot, 'node_modules/zipyai-react-native/lib/commonjs/utils/debugid.cjs'),\n];\nconst content = \"\\\"use strict\\\";Object.defineProperty(exports,\\\"__esModule\\\",{value:!0}),exports.BUNDLE_ID=void 0;const BUNDLE_ID=exports.BUNDLE_ID=\\\"\" + bundleId + "\\\";\";\nfor (const filePath of debugIdFiles) {\n  if (!fs.existsSync(filePath)) continue;\n  fs.writeFileSync(filePath, content, 'utf8');\n}\nZIPYEOF\nexport BUNDLE_FILE=\"$ZIPY_IOS_OUTPUT_DIR/main.jsbundle\"\nexport SOURCEMAP_FILE=\"$ZIPY_IOS_OUTPUT_DIR/main.jsbundle.map\"\nmkdir -p \"$(dirname \"$BUNDLE_FILE\")\"\nset -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"\\\"$WITH_ENVIRONMENT\\\" \\\"$REACT_NATIVE_XCODE\\\"\"\n";
 		};
 		00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -198,6 +201,20 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-newrnapp/Pods-newrnapp-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		B1CCF5D629E807AAB8ED541D /* ZipySourcemapsUpload */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = ZipySourcemapsUpload;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd \"${SRCROOT}/..\" && [ -f node_modules/zipy-mobile-cli/zipy-ios-upload.sh ] && sh node_modules/zipy-mobile-cli/zipy-ios-upload.sh || true\n";
 		};
 		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -238,22 +255,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-newrnapp/Pods-newrnapp-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-
-		B1CCF5D629E807AAB8ED541D /* ZipySourcemapsUpload */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "ZipySourcemapsUpload";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "cd \"${SRCROOT}/..\" && [ -f node_modules/zipy-mobile-cli/zipy-ios-upload.sh ] && sh node_modules/zipy-mobile-cli/zipy-ios-upload.sh || true\n";
-		};
-	/* End PBXShellScriptBuildPhase section */
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		13B07F871A680F5B00A75B9A /* Sources */ = {
@@ -274,6 +276,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZDZWM9M58R;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = newrnapp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -304,6 +307,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZDZWM9M58R;
 				INFOPLIST_FILE = newrnapp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -386,6 +390,10 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -393,8 +401,13 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -451,6 +464,10 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -458,8 +475,12 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

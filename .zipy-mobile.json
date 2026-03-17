@@ -10,13 +10,17 @@
     "android": {
       "release": "android/app/build/generated/sourcemaps/react/release/index.android.bundle.map",
       "debug": "android/app/build/generated/sourcemaps/react/debug/index.android.bundle.map"
+    },
+    "ios": {
+      "release": "ios/build/zipy/Sourcemaps/main.jsbundle.map"
     }
   },
   "bundle": {
     "android": {
       "release": "android/app/build/generated/assets/react/release/index.android.bundle"
+    },
+    "ios": {
+      "release": "ios/build/zipy/Sourcemaps/main.jsbundle"
     }
   }
 }
-
-

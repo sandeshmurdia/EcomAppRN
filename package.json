@@ -20,7 +20,7 @@
     "react-native-gesture-handler": "^2.30.0",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "^4.24.0",
-    "zipy-mobile-cli": "file:../zipy-cli-mobile/zipy-mobile-cli-1.0.0.tgz",
+    "zipy-mobile-cli": "file:../zipy-cli-mobile/zipy-mobile-cli-1.0.1.tgz",
     "zipy-react-native": "file:../zipy-mobilesdk-reactnative-2/zipy-react-native-3.0.0.tgz"
   },
   "devDependencies": {
