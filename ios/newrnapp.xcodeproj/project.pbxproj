@@ -109,6 +109,7 @@
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
+				0E4133A5BB1484AD1BEEF119 /* ZipyBundleIdPrepare */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
 				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
@@ -182,7 +183,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export ZIPY_IOS_SOURCEMAP_PHASE=1\n# Stage the React Native bundle artifacts in a stable path so the later Zipy upload phase can locate them reliably during archives.\nexport BUNDLE_FILE=\"${PROJECT_DIR}/build/zipy/Sourcemaps/main.jsbundle\"\nexport SOURCEMAP_FILE=\"${PROJECT_DIR}/build/zipy/Sourcemaps/main.jsbundle.map\"\nmkdir -p \"$(dirname \"$BUNDLE_FILE\")\"\nset -e\n\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"\\\"$WITH_ENVIRONMENT\\\" \\\"$REACT_NATIVE_XCODE\\\"\"\n";
+			shellScript = "export ZIPY_IOS_SOURCEMAP_PHASE=1\n# Stage the React Native bundle artifacts in a stable path so the later Zipy upload phase can locate them reliably during archives.\nexport BUNDLE_FILE=\"${PROJECT_DIR}/build/zipy/Sourcemaps/main.jsbundle\"\nexport SOURCEMAP_FILE=\"${PROJECT_DIR}/build/zipy/Sourcemaps/main.jsbundle.map\"\nmkdir -p \"$(dirname \"$BUNDLE_FILE\")\"\nset -e\n\n\n\n\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"\\\"$WITH_ENVIRONMENT\\\" \\\"$REACT_NATIVE_XCODE\\\"\"\n";
 		};
 		00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -192,14 +193,32 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-newrnapp/Pods-newrnapp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-newrnapp/Pods-newrnapp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-newrnapp/Pods-newrnapp-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		0E4133A5BB1484AD1BEEF119 /* ZipyBundleIdPrepare */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = ZipyBundleIdPrepare;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd \"${SRCROOT}/..\" && [ -f node_modules/zipy-mobile-cli/zipy-ios-prepare.sh ] && sh node_modules/zipy-mobile-cli/zipy-ios-prepare.sh || true\n";
 		};
 		B1CCF5D629E807AAB8ED541D /* ZipySourcemapsUpload */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -245,9 +264,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-newrnapp/Pods-newrnapp-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-newrnapp/Pods-newrnapp-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -289,7 +312,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.newrnappsandesh;
 				PRODUCT_NAME = newrnapp;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -319,7 +342,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.newrnappsandesh;
 				PRODUCT_NAME = newrnapp;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;
