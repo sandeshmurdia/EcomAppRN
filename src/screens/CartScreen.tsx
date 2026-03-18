@@ -28,29 +28,37 @@ export function CartScreen({ navigation }: Props) {
   const total = subtotal + tax;
 
   const handleProceedToCheckout = () => {
-    try {
-      const storeName = (
-        cart[0].product as {
-          fulfillment?: {
-            store?: {
-              name: string;
-            };
-          };
-        }
-      ).fulfillment!.store!.name;
-
-      console.log('Preparing checkout for store', storeName);
-      navigation.navigate('Checkout');
-    } catch (error : any) {
-      // Surface the handled checkout exception to the user as a toast on Android,
-      // while still keeping the console error for debugging/monitoring tools.
-      console.error(error);
-      console.error("Got error here", error);
-      console.error("got here", error.stack);
-      console.error("got here 2", error.message);
-      setErrorMessage('Checkout validation failed. Please try again.');
+    // The cart can briefly be emptied while the screen is mounted (e.g. rapid taps + state updates),
+    // so guard here instead of relying only on the render-time empty-cart branch.
+    if (cart.length === 0) {
+      const msg = 'Your cart is empty.';
+      setErrorMessage(msg);
       if (Platform.OS === 'android') {
-        ToastAndroid.show('Checkout validation failed. Please try again.', ToastAndroid.SHORT);
+        ToastAndroid.show(msg, ToastAndroid.SHORT);
+      }
+      return;
+    }
+
+    // Some product sources don’t include fulfillment/store metadata; checkout should still work.
+    // Avoid non-null assertions here to prevent runtime crashes/blocking checkout.
+    const storeName = cart[0].product.fulfillment?.store?.name;
+    if (storeName) {
+      console.log('Preparing checkout for store', storeName);
+    } else {
+      console.warn('Preparing checkout without store metadata', {
+        productId: cart[0]?.product?.id,
+      });
+    }
+
+    try {
+      navigation.navigate('Checkout');
+    } catch (error: unknown) {
+      // Surface the handled checkout exception to the user as a toast on Android, while still
+      // keeping the console error for debugging/monitoring tools.
+      console.error('Checkout navigation failed', error);
+      setErrorMessage('Unable to proceed to checkout. Please try again.');
+      if (Platform.OS === 'android') {
+        ToastAndroid.show('Unable to proceed to checkout. Please try again.', ToastAndroid.SHORT);
       }
     }
 
