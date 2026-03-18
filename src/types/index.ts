@@ -13,6 +13,15 @@ export interface Product {
   rating: number;
   reviewCount: number;
   inStock: boolean;
+  /**
+   * Optional fulfillment metadata (may not be present for all product sources).
+   * Kept optional to avoid breaking existing product ingestion paths.
+   */
+  fulfillment?: {
+    store?: {
+      name?: string;
+    };
+  };
 }
 
 export interface Category {
