@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Input } from '../components/Input';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { useApp } from '../context/AppContext';
+import {
+  buildIntentionalUiError,
+  intentionalErrorTriggers,
+} from '../monitoring/handledUiErrors';
 
 type AuthParamList = { SignIn: undefined; SignUp: undefined };
 type Props = { navigation: NativeStackNavigationProp<AuthParamList, 'SignIn'> };
@@ -17,20 +21,41 @@ export function SignInScreen({ navigation }: Props) {
   const [error, setError] = useState('');
 
   const handleSignIn = () => {
-    setError('');
-    if (!email.trim()) {
-      setError('Please enter your email');
-      return;
+    try {
+      setError('');
+
+      if (!email.trim()) {
+        setError('Please enter your email');
+        return;
+      }
+
+      if (!password) {
+        setError('Please enter your password');
+        return;
+      }
+
+      // Keep this trigger opt-in so normal demo sign-ins continue to work.
+      if (email.trim().toLowerCase() === intentionalErrorTriggers.signInEmail) {
+        throw buildIntentionalUiError('signInEmail');
+      }
+
+      const success = signIn(email.trim(), password);
+      if (!success) {
+        setError('Invalid credentials. Use any email/password for demo.');
+      }
+      // On success, RootNavigator switches to Main automatically via useApp().user
+    } catch (error) {
+      // Mirror the cart-screen style so handled auth errors are visible in logs
+      // and easy to inspect during QA validation.
+      console.error(error);
+      console.error('Sign-in handled error', error);
+      console.error('Sign-in handled error stack', error instanceof Error ? error.stack : undefined);
+      console.error('Sign-in handled error message', error instanceof Error ? error.message : String(error));
+      setError('Sign-in validation failed. Please try again.');
+      if (Platform.OS === 'android') {
+        ToastAndroid.show('Sign-in validation failed. Please try again.', ToastAndroid.SHORT);
+      }
     }
-    if (!password) {
-      setError('Please enter your password');
-      return;
-    }
-    const success = signIn(email.trim(), password);
-    if (!success) {
-      setError('Invalid credentials. Use any email/password for demo.');
-    }
-    // On success, RootNavigator switches to Main automatically via useApp().user
   };
 
   return (

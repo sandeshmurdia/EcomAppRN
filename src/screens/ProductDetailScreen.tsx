@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import {
   Image,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
   View,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -14,6 +16,10 @@ import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { useApp } from '../context/AppContext';
 import { HomeStackParamList } from '../navigation/types';
+import {
+  buildIntentionalUiError,
+  intentionalErrorTriggers,
+} from '../monitoring/handledUiErrors';
 
 type Props = {
   navigation: NativeStackNavigationProp<HomeStackParamList, 'ProductDetail'>;
@@ -24,10 +30,31 @@ export function ProductDetailScreen({ navigation, route }: Props) {
   const { product } = route.params;
   const { addToCart } = useApp();
   const [quantity, setQuantity] = useState(1);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
-    navigation.getParent()?.navigate('CartTab');
+    try {
+      setErrorMessage('');
+
+      // Keep this trigger behind a deliberate quantity so regular add-to-cart still works.
+      if (quantity === intentionalErrorTriggers.addToCartQuantity) {
+        throw buildIntentionalUiError('addToCartQuantity');
+      }
+
+      addToCart(product, quantity);
+      navigation.getParent()?.navigate('CartTab');
+    } catch (error) {
+      // Mirror the cart-screen style so handled add-to-cart issues leave
+      // explicit console breadcrumbs during Zipy testing.
+      console.error(error);
+      console.error('Add-to-cart handled error', error);
+      console.error('Add-to-cart handled error stack', error instanceof Error ? error.stack : undefined);
+      console.error('Add-to-cart handled error message', error instanceof Error ? error.message : String(error));
+      setErrorMessage('Add to cart failed. Please try again.');
+      if (Platform.OS === 'android') {
+        ToastAndroid.show('Add to cart failed. Please try again.', ToastAndroid.SHORT);
+      }
+    }
   };
 
   const hasDiscount =
@@ -82,6 +109,7 @@ export function ProductDetailScreen({ navigation, route }: Props) {
           onPress={handleAddToCart}
           disabled={!product.inStock}
         />
+        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       </View>
     </ScrollView>
   );
@@ -151,4 +179,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   qtyBtnText: { fontSize: 20, fontWeight: '700', color: colors.primary },
+  errorText: { fontSize: 14, color: colors.error, marginTop: spacing.sm },
 });

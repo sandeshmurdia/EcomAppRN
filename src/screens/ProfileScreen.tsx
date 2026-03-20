@@ -1,11 +1,15 @@
-import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Platform, ScrollView, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { useApp } from '../context/AppContext';
 import { ProfileStackParamList } from '../navigation/types';
+import {
+  buildIntentionalUiError,
+  intentionalErrorTriggers,
+} from '../monitoring/handledUiErrors';
 
 type Props = {
   navigation: NativeStackNavigationProp<ProfileStackParamList, 'Profile'>;
@@ -13,10 +17,31 @@ type Props = {
 
 export function ProfileScreen({ navigation }: Props) {
   const { user, signOut } = useApp();
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSignOut = () => {
-    signOut();
-    // RootNavigator will show Auth stack when user becomes null
+    try {
+      setErrorMessage('');
+
+      // Tie the monitoring test to a dedicated email so normal sign-out remains unchanged.
+      if (user?.email?.toLowerCase() === intentionalErrorTriggers.signOutEmail) {
+        throw buildIntentionalUiError('signOutEmail');
+      }
+
+      signOut();
+      // RootNavigator will show Auth stack when user becomes null
+    } catch (error) {
+      // Mirror the cart-screen style so handled sign-out issues are visible
+      // in logs when QA validates profile-level error capture.
+      console.error(error);
+      console.error('Sign-out handled error', error);
+      console.error('Sign-out handled error stack', error instanceof Error ? error.stack : undefined);
+      console.error('Sign-out handled error message', error instanceof Error ? error.message : String(error));
+      setErrorMessage('Sign-out failed. Please try again.');
+      if (Platform.OS === 'android') {
+        ToastAndroid.show('Sign-out failed. Please try again.', ToastAndroid.SHORT);
+      }
+    }
   };
 
   return (
@@ -45,6 +70,7 @@ export function ProfileScreen({ navigation }: Props) {
         <Text style={styles.menuItem}>Contact us</Text>
       </View>
 
+      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       <PrimaryButton
         title="Sign Out"
         onPress={handleSignOut}
@@ -95,4 +121,5 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
+  errorText: { color: colors.error, fontSize: 14, marginBottom: spacing.md },
 });

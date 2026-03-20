@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import {
   Image,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  ToastAndroid,
   View,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -15,6 +13,11 @@ import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { useApp } from '../context/AppContext';
 import { CartStackParamList } from '../navigation/types';
+import {
+  buildIntentionalUiError,
+  intentionalErrorTriggers,
+  reportHandledUiError,
+} from '../monitoring/handledUiErrors';
 
 type Props = {
   navigation: NativeStackNavigationProp<CartStackParamList, 'Cart'>;
@@ -29,6 +32,12 @@ export function CartScreen({ navigation }: Props) {
 
   const handleProceedToCheckout = () => {
     try {
+      setErrorMessage('');
+
+      if (cart.some((item) => item.quantity === intentionalErrorTriggers.checkoutQuantity)) {
+        throw buildIntentionalUiError('checkoutQuantity');
+      }
+
       const storeName = (
         cart[0].product as {
           fulfillment?: {
@@ -41,20 +50,14 @@ export function CartScreen({ navigation }: Props) {
 
       console.log('Preparing checkout for store', storeName);
       navigation.navigate('Checkout');
-    } catch (error : any) {
-      // Surface the handled checkout exception to the user as a toast on Android,
-      // while still keeping the console error for debugging/monitoring tools.
-      console.error(error);
-      console.error("Got error hereeee", error);
-      console.error("got hereeee", error.stack);
-      console.error("got here 2", error.message);
-      setErrorMessage('Checkout validation failed. Please try again.');
-      if (Platform.OS === 'android') {
-        ToastAndroid.show('Checkout validation failed. Please try again.', ToastAndroid.SHORT);
-      }
+    } catch (error) {
+      reportHandledUiError({
+        context: 'cart-checkout',
+        error,
+        userMessage: 'Checkout validation failed. Please try again.',
+        setErrorMessage,
+      });
     }
-
-
   };
 
   if (cart.length === 0) {

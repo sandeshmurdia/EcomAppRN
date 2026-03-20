@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Input } from '../components/Input';
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -7,6 +7,10 @@ import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { useApp } from '../context/AppContext';
 import { CartStackParamList } from '../navigation/types';
+import {
+  buildIntentionalUiError,
+  intentionalErrorTriggers,
+} from '../monitoring/handledUiErrors';
 
 type Props = {
   navigation: NativeStackNavigationProp<CartStackParamList, 'Checkout'>;
@@ -26,25 +30,48 @@ export function CheckoutScreen({ navigation }: Props) {
   const total = subtotal + tax;
 
   const handlePlaceOrder = () => {
-    setError('');
-    if (!line1.trim()) {
-      setError('Please enter address');
-      return;
+    try {
+      setError('');
+
+      if (!line1.trim()) {
+        setError('Please enter address');
+        return;
+      }
+
+      if (!city.trim()) {
+        setError('Please enter city');
+        return;
+      }
+
+      if (!state.trim()) {
+        setError('Please enter state');
+        return;
+      }
+
+      if (!zip.trim()) {
+        setError('Please enter ZIP code');
+        return;
+      }
+
+      // Use a dedicated ZIP trigger so QA can validate a handled checkout error on demand.
+      if (zip.trim() === intentionalErrorTriggers.checkoutZip) {
+        throw buildIntentionalUiError('checkoutZip');
+      }
+
+      clearCart();
+      navigation.replace('OrderConfirm');
+    } catch (error) {
+      // Mirror the cart-screen style so handled checkout issues are easy to
+      // inspect in device logs during order-placement testing.
+      console.error(error);
+      console.error('Checkout handled error', error);
+      console.error('Checkout handled error stack', error instanceof Error ? error.stack : undefined);
+      console.error('Checkout handled error message', error instanceof Error ? error.message : String(error));
+      setError('Order placement failed. Please try again.');
+      if (Platform.OS === 'android') {
+        ToastAndroid.show('Order placement failed. Please try again.', ToastAndroid.SHORT);
+      }
     }
-    if (!city.trim()) {
-      setError('Please enter city');
-      return;
-    }
-    if (!state.trim()) {
-      setError('Please enter state');
-      return;
-    }
-    if (!zip.trim()) {
-      setError('Please enter ZIP code');
-      return;
-    }
-    clearCart();
-    navigation.replace('OrderConfirm');
   };
 
   return (

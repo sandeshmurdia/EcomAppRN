@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Input } from '../components/Input';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { useApp } from '../context/AppContext';
+import {
+  buildIntentionalUiError,
+  intentionalErrorTriggers,
+} from '../monitoring/handledUiErrors';
 
 type AuthParamList = { SignIn: undefined; SignUp: undefined };
 type Props = { navigation: NativeStackNavigationProp<AuthParamList, 'SignUp'> };
@@ -18,21 +22,43 @@ export function SignUpScreen({ navigation }: Props) {
   const [error, setError] = useState('');
 
   const handleSignUp = () => {
-    setError('');
-    if (!name.trim()) {
-      setError('Please enter your name');
-      return;
+    try {
+      setError('');
+
+      if (!name.trim()) {
+        setError('Please enter your name');
+        return;
+      }
+
+      if (!email.trim()) {
+        setError('Please enter your email');
+        return;
+      }
+
+      if (!password || password.length < 6) {
+        setError('Password must be at least 6 characters');
+        return;
+      }
+
+      // Keep this trigger opt-in so QA can reproduce a handled sign-up error on demand.
+      if (name.trim().toLowerCase() === intentionalErrorTriggers.signUpName) {
+        throw buildIntentionalUiError('signUpName');
+      }
+
+      signIn(email.trim(), password);
+      // RootNavigator switches to Main automatically via useApp().user
+    } catch (error) {
+      // Mirror the cart-screen style so handled sign-up errors produce direct
+      // console traces during QA and monitoring validation.
+      console.error(error);
+      console.error('Sign-up handled error', error);
+      console.error('Sign-up handled error stack', error instanceof Error ? error.stack : undefined);
+      console.error('Sign-up handled error message', error instanceof Error ? error.message : String(error));
+      setError('Sign-up validation failed. Please try again.');
+      if (Platform.OS === 'android') {
+        ToastAndroid.show('Sign-up validation failed. Please try again.', ToastAndroid.SHORT);
+      }
     }
-    if (!email.trim()) {
-      setError('Please enter your email');
-      return;
-    }
-    if (!password || password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
-    signIn(email.trim(), password);
-    // RootNavigator switches to Main automatically via useApp().user
   };
 
   return (
