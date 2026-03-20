@@ -28,26 +28,24 @@ export function CartScreen({ navigation }: Props) {
   const total = subtotal + tax;
 
   const handleProceedToCheckout = () => {
-    try {
-      const storeName = (
-        cart[0].product as {
-          fulfillment?: {
-            store?: {
-              name: string;
-            };
-          };
-        }
-      ).fulfillment!.store!.name;
+    // Guard against race conditions (e.g., cart emptied between render and press) and prevent
+    // unsafe reads from optional product metadata that isn't part of the `Product` model.
+    if (cart.length === 0) {
+      const msg = 'Your cart is empty. Add items before checking out.';
+      setErrorMessage(msg);
+      if (Platform.OS === 'android') ToastAndroid.show(msg, ToastAndroid.SHORT);
+      console.warn('Checkout blocked: empty cart');
+      return;
+    }
 
-      console.log('Preparing checkout for store', storeName);
+    try {
+      // Keep checkout logging lightweight and safe: `Product` doesn't guarantee store/fulfillment data.
+      console.log('Preparing checkout', { itemCount: cart.length, firstProductId: cart[0]?.product?.id });
       navigation.navigate('Checkout');
-    } catch (error : any) {
+    } catch (error: unknown) {
       // Surface the handled checkout exception to the user as a toast on Android,
       // while still keeping the console error for debugging/monitoring tools.
-      console.error(error);
-      console.error("Got error hereeee", error);
-      console.error("got hereeee", error.stack);
-      console.error("got here 2", error.message);
+      console.error('Checkout navigation failed', error);
       setErrorMessage('Checkout validation failed. Please try again.');
       if (Platform.OS === 'android') {
         ToastAndroid.show('Checkout validation failed. Please try again.', ToastAndroid.SHORT);
