@@ -13,6 +13,15 @@ export interface Product {
   rating: number;
   reviewCount: number;
   inStock: boolean;
+  /**
+   * Optional fulfillment metadata present in some catalog payloads.
+   * Kept optional to avoid runtime errors when the backend/feed omits it.
+   */
+  fulfillment?: {
+    store?: {
+      name?: string;
+    };
+  };
 }
 
 export interface Category {
