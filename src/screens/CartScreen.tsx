@@ -28,20 +28,33 @@ export function CartScreen({ navigation }: Props) {
   const total = subtotal + tax;
 
   const handleProceedToCheckout = () => {
-    try {
-      const storeName = (
-        cart[0].product as {
-          fulfillment?: {
-            store?: {
-              name: string;
-            };
-          };
-        }
-      ).fulfillment!.store!.name;
+    // Clear any prior checkout validation UI before re-attempting.
+    setErrorMessage('');
 
-      console.log('Preparing checkout for store', storeName);
+    // Defensive guard: the UI hides checkout when cart is empty, but cart can change between render and tap.
+    if (cart.length === 0) {
+      setErrorMessage('Your cart is empty. Add items before checking out.');
+      if (Platform.OS === 'android') {
+        ToastAndroid.show('Your cart is empty. Add items before checking out.', ToastAndroid.SHORT);
+      }
+      return;
+    }
+
+    try {
+      // Some product sources may not include optional fulfillment/store metadata. Use optional chaining
+      // instead of non-null assertions to avoid a runtime TypeError blocking checkout.
+      const storeName = cart[0]?.product?.fulfillment?.store?.name;
+      if (storeName) {
+        console.log('Preparing checkout for store', storeName);
+      } else {
+        console.warn('Checkout store metadata missing for first cart item', {
+          productId: cart[0]?.product?.id,
+          cartSize: cart.length,
+        });
+      }
+
       navigation.navigate('Checkout');
-    } catch (error : any) {
+    } catch (error: any) {
       // Surface the handled checkout exception to the user as a toast on Android,
       // while still keeping the console error for debugging/monitoring tools.
       console.error(error);
