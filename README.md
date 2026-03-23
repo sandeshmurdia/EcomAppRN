@@ -86,6 +86,22 @@ You've successfully run and modified your React Native App. :partying_face:
 
 If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
 
+## Zipy: `EACCES` on `debugid.cjs` (iOS archive / Android release)
+
+If Xcode logs show:
+
+`[zipy] could not write bundle id into debugid.cjs ... EACCES: permission denied`
+
+then files under `node_modules/zipyai-react-native` (or `zipy-react-native`) are often **owned by root**, usually from running `sudo npm install` once.
+
+**Fix (run from project root, enter your macOS password when `sudo` asks):**
+
+```sh
+npm run fix:zipy-permissions
+```
+
+**Prevention:** do not use `sudo` with npm/yarn; reinstall dependencies as your normal user if needed (`rm -rf node_modules && npm install`).
+
 # Learn More
 
 To learn more about React Native, take a look at the following resources:
@@ -95,4 +111,3 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
-# ggggg

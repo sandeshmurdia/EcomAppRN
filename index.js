@@ -5,7 +5,7 @@ import 'react-native-gesture-handler';
 import { AppRegistry } from 'react-native';
 import App from './App';
 import { name as appName } from './app.json';
-import zipy, { withGestureCapture } from 'zipy-react-native';
+import zipy, { withGestureCapture } from 'zipyai-react-native';
 console.log('izpt  dasdasdasd ');
 
 
@@ -13,7 +13,7 @@ console.log('izpt  dasdasdasd ');
 
 
 
-zipy.init("ce16257c");
+zipy.init("115c7f9b");
 
 
 AppRegistry.registerComponent(appName, () => withGestureCapture(App));

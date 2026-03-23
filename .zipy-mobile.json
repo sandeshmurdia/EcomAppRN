@@ -1,11 +1,11 @@
 {
-  "_comment": "To change sourcemap or bundle paths: edit sourcemaps.android.release, sourcemaps.android.debug, and bundle.android.release (paths are relative to project root).",
-  "projectRoot": "/Users/sandesh/reactnativelatest/ReactNativeLatest",
+  "_comment": "To change Android upload paths, edit sourcemaps.android.release, sourcemaps.android.debug, and bundle.android.release. iOS archive uploads auto-discover main.jsbundle and main.jsbundle.map from common ios/build, archive, and DerivedData locations, or you can override sourcemaps.ios.release/debug and bundle.ios.release/debug for manual uploads.",
+  "projectRoot": "/Users/sandesh/newrnapp",
   "framework": "react-native",
-  "uploadBaseUrl": "https://servicesqa.zipy.ai/",
-  "apiKey": "ce16257c",
-  "customerId": "105",
-  "authKey": "105n0vcbe2mprctfrngv2k8sv0a8sa3d",
+  "uploadBaseUrl": "https://services.zipy.ai",
+  "apiKey": "115c7f9b",
+  "customerId": "139",
+  "authKey": "139tp746csa31gerikg1978ng2e4tu5i",
   "sourcemaps": {
     "android": {
       "release": "android/app/build/generated/sourcemaps/react/release/index.android.bundle.map",

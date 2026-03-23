@@ -1926,7 +1926,7 @@ PODS:
     - ReactNativeDependencies
     - Yoga
   - Yoga (0.0.0)
-  - zipyai-react-native (3.0.0):
+  - zipyai-react-native (1.0.19):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2028,7 +2028,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
-  - zipyai-react-native (from `../node_modules/zipy-react-native`)
+  - zipyai-react-native (from `../node_modules/zipyai-react-native`)
 
 EXTERNAL SOURCES:
   FBLazyVector:
@@ -2187,7 +2187,7 @@ EXTERNAL SOURCES:
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
   zipyai-react-native:
-    :path: "../node_modules/zipy-react-native"
+    :path: "../node_modules/zipyai-react-native"
 
 SPEC CHECKSUMS:
   FBLazyVector: e97c19a5a442429d1988f182a1940fb08df514da
@@ -2267,7 +2267,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 07de6f059e0ee5744ae9a56feb07ee345338cc31
   RNScreens: 6cb648bdad8fe9bee9259fe144df95b6d1d5b707
   Yoga: c0b3f2c7e8d3e327e450223a2414ca3fa296b9a2
-  zipyai-react-native: 0f17ebaa560981a1941c1c4ed3ce61b34fb793a2
+  zipyai-react-native: 0ccd7828fbb14ef1a044071adfda4c6aa60f211f
 
 PODFILE CHECKSUM: 4a563519f2fca45ad27ead31d462ff152d593cf2
 
