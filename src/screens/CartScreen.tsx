@@ -28,33 +28,32 @@ export function CartScreen({ navigation }: Props) {
   const total = subtotal + tax;
 
   const handleProceedToCheckout = () => {
-    try {
-      const storeName = (
-        cart[0].product as {
-          fulfillment?: {
-            store?: {
-              name: string;
-            };
-          };
-        }
-      ).fulfillment!.store!.name;
+    setErrorMessage('');
 
-      console.log('Preparing checkout for store', storeName);
-      navigation.navigate('Checkout');
-    } catch (error : any) {
-      // Surface the handled checkout exception to the user as a toast on Android,
-      // while still keeping the console error for debugging/monitoring tools.
-      console.error(error);
-      console.error("Got error hereeee", error);
-      console.error("got hereeee", error.stack);
-      console.error("got here 2", error.message);
-      setErrorMessage('Checkout validation failed. Please try again.');
+    // The button is only rendered when `cart.length > 0`, but cart state can still change
+    // between render and press (e.g. fast taps after removing items). Guard to avoid crashes.
+    const firstItem = cart[0];
+    if (!firstItem) {
+      const message = 'Your cart is empty. Add an item to continue.';
+      setErrorMessage(message);
       if (Platform.OS === 'android') {
-        ToastAndroid.show('Checkout validation failed. Please try again.', ToastAndroid.SHORT);
+        ToastAndroid.show(message, ToastAndroid.SHORT);
       }
+      return;
     }
 
+    // Some product feeds may omit fulfillment/store metadata. This must never block checkout
+    // or crash the app; we log missing data to aid debugging while proceeding safely.
+    const storeName = firstItem.product.fulfillment?.store?.name;
+    if (storeName) {
+      console.log('Preparing checkout for store', storeName);
+    } else {
+      console.warn('Checkout: missing store info for first cart item', {
+        productId: firstItem.product.id,
+      });
+    }
 
+    navigation.navigate('Checkout');
   };
 
   if (cart.length === 0) {
