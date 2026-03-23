@@ -15,7 +15,9 @@ type Props = {
   navigation: NativeStackNavigationProp<ProfileStackParamList, 'Profile'>;
 };
 
-export function ProfileScreen({ navigation }: Props) {
+export function ProfileScreen({ navigation: _navigation }: Props) {
+  // Prefixing unused navigation with `_` keeps the screen signature consistent with others,
+  // while satisfying eslint when navigation isn't currently needed.
   const { user, signOut } = useApp();
   const [errorMessage, setErrorMessage] = useState('');
 
